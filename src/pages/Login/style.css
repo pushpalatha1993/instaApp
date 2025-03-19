@@ -1,0 +1,13 @@
+.login-btn{
+    border:none;
+    background-color:#0d807e;
+    color: white;
+    width: 100%;
+    font-size: 1.2rem;
+}
+.login-title{
+    border-bottom: 3px solid #0d807e ;
+}
+.login-container{
+    background-color: #54DFFE;
+}
