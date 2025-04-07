@@ -11,3 +11,22 @@
 .login-container{
     background-color: #54DFFE;
 }
+.custom-toast {
+    background-color: transparent;
+    color: black;
+    font-size: 0.2rem;
+    font-weight: lighter;
+    border-radius: 10px;
+    padding: 10px;
+    width: 40%;
+    height: 10%;
+}
+.btn {
+    padding-right: 1rem;
+    position: absolute;
+    font-size: 0.8rem;
+    font-weight: lighter;
+    top: 0.2rem;
+    right: 1rem;
+
+}
