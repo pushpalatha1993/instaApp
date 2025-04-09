@@ -4,27 +4,29 @@ import { Link } from 'react-router-dom';
 import { Toast,ToastContainer} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from "react-toastify";
-import { withRouter } from 'react-router-dom';
-export default class  SignUp extends Component {
+import {withRouter} from "../withRouter"
+ class  SignUp extends Component {
     
    constructor(props){
         super(props);
         this.state = {
-            username:  " ",
+            name:  " ",
             email: " ",
-            password: " ",
+            password: "",
             errorMessage: " ",
             successMessage:" ",
             showToast:false,
             toastMessage:"",
             toastType:"success",
             value:" ",
+            disabledSignupBtn:false,
+            
 
         }
     }
-    txtChange(e) {
-        this.setState({input: e.target.value});
-    }
+    // txtChange(e) {
+        // this.setState({input: e.target.value});
+    // }
        showToast = ()=> {
         toast("this is a custom-styled toast!",{
             className: "custom-toast",
@@ -40,17 +42,25 @@ export default class  SignUp extends Component {
             [event.target.name]: event.target.value
         })
     }
+    isFormValid = () => {
+        const {name,email,password } = this.state;
+        // console.log(name)
+        // console.log(email)
+        // console.log(password)
+        return name.trim() !== '' && email.trim() !== '' && password.trim() !== ''
+    }
 
     handleSubmit = (event) => {
         // console.dir(this.state)
         event.preventDefault()
+        // this.props.navigate('/Home')
        
         fetch(" https://instaapp-np7g.onrender.com/api/auth/register/email ",{           
             method: "POST",
            headers: {
                'Content-Type': 'application/json',
            },
-           body: JSON.stringify({name:this.state.username,email:this.state.email,password:this.state.password}),
+           body: JSON.stringify({name:this.state.name,email:this.state.email,password:this.state.password}),
       })
        .then((response) => response.json())
        .then((data)=>{
@@ -59,6 +69,9 @@ export default class  SignUp extends Component {
         if(data){
             console.log(data.message)
             this.setState({successMessage: "signup successful",showToast:"true",toastMessage:data.message,toastType:"successful"})
+            // console.log(this.props)
+            this.props.routers.navigate('/Login')
+            
         }
         
         
@@ -75,15 +88,17 @@ export default class  SignUp extends Component {
        
        
     }
+
     handleToastClose = () => {
         console.log("handle")
         this.setState({showToast: false})
     }
 
  render () {
-    // console.log(this.props)
+    console.log(this.props)
     // console.log(this.state)
-    const {showToast, toastMessage, toastType,toggleShow} = this.state;
+    const {showToast, toastMessage, toastType,toggleShow,isFormValid} = this.state;
+    const isEnabled = this.isFormValid();
     console.log(this.state.toastMessage)
 
      return (
@@ -96,22 +111,22 @@ export default class  SignUp extends Component {
             <form className="col-12 col-md-6 py-4 px-3">
                 <h4 className="SignUp-title text-center py-2 mb-4">SignUp</h4>
                 <div className="form-floating mb-3">
-                    <input type="text" name="username" className="form-control" id="username" placeholder="codediggy" onChange={ this.handleChange} />
-                    <label htmlFor="username">Username</label>
+                    <input type="text" name="name" className="form-control" id="name" value={this.state.name} placeholder="codediggy" onChange={ this.handleChange} />
+                    <label htmlFor="name">name</label>
                 </div>
 
                 <div className="form-floating mb-3">
-                    <input type="email" name="email" className="form-control" id="email" placeholder='name@example.com' onChange={this.handleChange} />
+                    <input type="email" name="email" className="form-control" id="email"value={this.state.email} placeholder='name@example.com' onChange={this.handleChange} />
                     <label htmlFor="email">Email</label>
                 </div>
 
                 <div className="form-floating mb-3">
-                    <input type="password" name="password" className="form-control" placeholder='password' id="password" onChange={this.handleChange} />
+                    <input type="password" name="password" className="form-control" value={this.state.password} placeholder='password' id="password" onChange={this.handleChange} />
                     <label htmlFor="password">password</label>
 
                 </div>
                 <div className="text-center">
-                    <button className="signup-btn py-3 rounded-3" onClick={this.handleSubmit}>
+                    <button className="signup-btn py-3 rounded-3" disabled={!isEnabled} onClick={this.handleSubmit}>
                         SignUp
                     </button>
                 </div>
@@ -124,10 +139,8 @@ export default class  SignUp extends Component {
         
             {this.state.successMessage && <p style = {{color:'green'}}>{this.state.successMessage}</p>}
 
-           <ToastContainer position ="top-end" className="custom-toast" >
-            
-            
-             <Toast
+           {/* <ToastContainer position ="top-end" className="custom-toast" >
+            <Toast
             show={this.state.showToast}
             onClose={this.handleToastClose}
             bg={this.state.toastType}
@@ -142,12 +155,12 @@ export default class  SignUp extends Component {
 
             </Toast>
             
-           </ToastContainer>
+           </ToastContainer> */}
 
         </div>
     </div>
 )}
    
-
 }
 
+export default withRouter(SignUp);

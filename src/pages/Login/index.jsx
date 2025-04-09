@@ -14,12 +14,13 @@ import {withRouter} from './withRouter'
         super(props);
         this.state = {
             email:" ",
-            password:" ",
+            password:"",
             errorMessage:" ",
             successMessage:" ",
             showToast:false,
             toastMessage:"",
-            toastType:"success "
+            toastType:"success ",
+            disableLoginBtn:false,
 
         }
     }
@@ -40,12 +41,16 @@ import {withRouter} from './withRouter'
             [event.target.name]: event.target.value
         })
  }
+ isFormValid = () => {
+    const {email, password } =this.state;
+    return email.trim() !==''&& password.trim() !== '';
+ }
  handleSubmit = (event) => {
     console.dir(this.state)
     event.preventDefault()
     console.dir(this.props)
     // this.props.routers.navigate('/home');
-    this.props.routers.navigate('/Home')
+    
     fetch("https://instaapp-np7g.onrender.com/api/auth/login",{
         method: "POST",
         headers: {
@@ -59,6 +64,7 @@ import {withRouter} from './withRouter'
         // console.dir(data)
         if(data){
             this.setState({successMessage:"Login successful",showToast:"true",toastMessage:data.message,toastType:"succesful"})
+            this.props.routers.navigate('/Home')
         }
     })
     .catch((error) => {
@@ -74,7 +80,7 @@ import {withRouter} from './withRouter'
 
           handleLogin = () => {
         alert("Login successful")
-        // this.props.history.push("/home")
+        
     }
     
     handleToastClose = () => {
@@ -85,12 +91,13 @@ import {withRouter} from './withRouter'
 render () {
 
     console.log(this.state)
-    console.log(this.state.email)
-    console.log(!this.state.email)
+    console.log(this.props)
     
     
 
-    const {showToast, toastMessage,toastType,toggleShow,withRouter} = this.state;
+    const {showToast, toastMessage,toastType,toggleShow,withRouter,isFormValid} = this.state.email && this.state.password
+    const isEnabled = this.isFormValid();
+    
      return (
     <div className="row g-0 vh-100 justify-content-center align-items-center login-container">
 
@@ -101,19 +108,19 @@ render () {
             <form className="col-12 col-md-6 py-4 px-3">
                 <h4 className="login-title text-center py-2 mb-4">Login</h4>
                 <div className="form-floating mb-3">
-                    <input type="email"  name="email" className="form-control" id="email" placeholder='name@example.com' onChange={this.handleChange } />
+                    <input type="email"  name="email" className="form-control" id="email" placeholder='name@example.com' value={this.state.email} onChange={this.handleChange } />
                     <label htmlFor="email">Email</label>
                 </div>
 
 
                 <div className="form-floating mb-3">
-                    <input type="password"  name="password" className="form-control" placeholder='password' id="password" onChange={this.handleChange} />
-                    <label htmlFor="password">password</label>
+                    <input type="password"  name="password" className="form-control" placeholder="password" id="password"  value={this.state.password} onChange={this.handleChange} />
+                    <label htmlFor="password">Password</label>
 
                 </div>
                 <div className="text-center">
 
-                    <button className="login-btn py-3 rounded-3"  onClick={this.handleSubmit}>
+                    <button className="login-btn py-3 rounded-3" type="Login" disabled={!isEnabled} onClick={this.handleSubmit}>
                         Login
                     </button>
                 </div>
@@ -134,7 +141,7 @@ render () {
                 delay={3000}
                 >
                     <button onClick={this.handleToastClose} className="btn">
-                        X
+                     X
                     </button>
                     <Toast.Body>{this.state.toastMessage}</Toast.Body>
 
