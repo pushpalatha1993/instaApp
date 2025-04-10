@@ -86,12 +86,12 @@ import { Modal,button } from "react-bootstrap";
             console.log(data.message)
             this.setState({successMessage: "signup successful",showToast:"true",toastMessage:data.message,toastType:"successful"})
             // console.log(this.props)
-            // this.props.routers.navigate('/Login')
-            
-        }
-        
-        
-       })
+            setTimeout(()=>{
+                this.props.routers.navigate('/Login')
+
+            },5000)
+              }
+             })
         .catch((error) => {
         console.dir(error)
         this.setState({
