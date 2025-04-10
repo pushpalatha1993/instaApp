@@ -1,10 +1,11 @@
 import React, {Component} from "react";
 import "./style.css"
 import { Link } from 'react-router-dom';
-import { Toast,ToastContainer} from 'react-bootstrap';
+import { Button, Toast,ToastContainer} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from "react-toastify";
 import {withRouter} from "../withRouter"
+import { Modal,button } from "react-bootstrap";
  class  SignUp extends Component {
     
    constructor(props){
@@ -20,13 +21,14 @@ import {withRouter} from "../withRouter"
             toastType:"success",
             value:" ",
             disabledSignupBtn:false,
-            
-
-        }
+            showModal:false,
+            loading:false,
+            error:''
+             }
     }
-    // txtChange(e) {
-        // this.setState({input: e.target.value});
-    // }
+    txtChange(e) {
+        this.setState({input: e.target.value});
+    }
        showToast = ()=> {
         toast("this is a custom-styled toast!",{
             className: "custom-toast",
@@ -54,8 +56,22 @@ import {withRouter} from "../withRouter"
         // console.dir(this.state)
         event.preventDefault()
         // this.props.navigate('/Home')
+        this.setState({ showModal:true});
        
-        fetch(" https://instaapp-np7g.onrender.com/api/auth/register/email ",{           
+       
+       
+       
+    }
+
+    handleToastClose = () => {
+        console.log("handle")
+        this.setState({showToast: false})
+    }
+    handleOk =()=>{
+        const {name,email,password} = this.state
+        this.setState({showModal:false,loading:true,error:''})
+
+         fetch(" https://instaapp-np7g.onrender.com/api/auth/register/email ",{           
             method: "POST",
            headers: {
                'Content-Type': 'application/json',
@@ -70,7 +86,7 @@ import {withRouter} from "../withRouter"
             console.log(data.message)
             this.setState({successMessage: "signup successful",showToast:"true",toastMessage:data.message,toastType:"successful"})
             // console.log(this.props)
-            this.props.routers.navigate('/Login')
+            // this.props.routers.navigate('/Login')
             
         }
         
@@ -85,19 +101,15 @@ import {withRouter} from "../withRouter"
         })
 
        })
-       
-       
     }
-
-    handleToastClose = () => {
-        console.log("handle")
-        this.setState({showToast: false})
+    handleCancel = ()=>{
+        this.setState({showModal:false})
     }
 
  render () {
     console.log(this.props)
     // console.log(this.state)
-    const {showToast, toastMessage, toastType,toggleShow,isFormValid} = this.state;
+    const {showToast, toastMessage, toastType,toggleShow,isFormValid,showModal} = this.state.name && this.state.email && this.state.password;
     const isEnabled = this.isFormValid();
     console.log(this.state.toastMessage)
 
@@ -139,7 +151,7 @@ import {withRouter} from "../withRouter"
         
             {this.state.successMessage && <p style = {{color:'green'}}>{this.state.successMessage}</p>}
 
-           {/* <ToastContainer position ="top-end" className="custom-toast" >
+            <ToastContainer position ="top-end" className="custom-toast" >
             <Toast
             show={this.state.showToast}
             onClose={this.handleToastClose}
@@ -155,9 +167,18 @@ import {withRouter} from "../withRouter"
 
             </Toast>
             
-           </ToastContainer> */}
+           </ToastContainer> 
 
         </div>
+        {this.state.showModal && (
+            <div className='modal'>
+                <div className='model-content'>
+                    <p>Please verify fields before processing</p>
+                    <button onClick={this.handleCancel}>Cancel</button>
+                    <button onClick={this.handleOk}>Ok</button>
+                </div>
+            </div>
+        )}
     </div>
 )}
    

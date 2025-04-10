@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 import { Toast, ToastContainer } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from 'react-toastify';
-import {withRouter} from './withRouter'
- class Login extends Component {
+import {withRouter} from './withRouter';
+import {Modal,button} from 'react-bootstrap';
 
+ class Login extends Component {
 
     // const [email, setEmail] = useState();
     // const [password, stePassword] = useState();
@@ -21,6 +22,9 @@ import {withRouter} from './withRouter'
             toastMessage:"",
             toastType:"success ",
             disableLoginBtn:false,
+            showModal:false,
+            loading:false,
+            error:''
 
         }
     }
@@ -49,33 +53,11 @@ import {withRouter} from './withRouter'
     console.dir(this.state)
     event.preventDefault()
     console.dir(this.props)
-    // this.props.routers.navigate('/home');
-    
-    fetch("https://instaapp-np7g.onrender.com/api/auth/login",{
-        method: "POST",
-        headers: {
-            'content-type' : 'application/json',
-        },
-        body: JSON.stringify({email:this.state.email,password:this.state.password}),
-    })
-    .then((response) => response.json())
-    .then((data)=>{
-        // console.log("responsedata")
-        // console.dir(data)
-        if(data){
-            this.setState({successMessage:"Login successful",showToast:"true",toastMessage:data.message,toastType:"succesful"})
-            this.props.routers.navigate('/Home')
-        }
-    })
-    .catch((error) => {
-        this.setState({ 
-            showToast: true,
-            toastMessage: 'Login Failed! please try again ',
-            toastType:'danger',
-        })
+this.setState({showModal: true})
 
-    })
-        
+    
+    
+   
     }
 
           handleLogin = () => {
@@ -84,9 +66,43 @@ import {withRouter} from './withRouter'
     }
     
     handleToastClose = () => {
-        console.log("handle")
+        // console.log("handle")
         this.setState({showToast: false})
      }
+     
+     handleOk = () => {
+        const {email,password} = this.state;
+        this.setState({showModal: false,loading:true,error:''})
+
+        fetch("https://instaapp-np7g.onrender.com/api/auth/login",{
+            method: "POST",
+            headers: {
+                'content-type' : 'application/json',
+            },
+            body: JSON.stringify({email:this.state.email,password:this.state.password}),
+        })
+        .then((response) => response.json())
+        .then((data)=>{
+            // console.log("responsedata")
+            // console.dir(data)
+            if(data){
+                this.setState({successMessage:"Login successful",showToast:"true",toastMessage:data.message,toastType:"succesful"})
+                // this.props.routers.navigate('/Home')
+            }
+        })
+        .catch((error) => {
+            this.setState({ 
+                showToast: true,
+                toastMessage: 'Login Failed! please try again ',
+                toastType:'danger',
+            })
+          })
+     }
+     handleCancel  = () => {
+        this.setState({showModal:false})
+     }
+    
+        
 
 render () {
 
@@ -95,7 +111,7 @@ render () {
     
     
 
-    const {showToast, toastMessage,toastType,toggleShow,withRouter,isFormValid} = this.state.email && this.state.password
+    const {showToast, toastMessage,toastType,toggleShow,withRouter,isFormValid,showModal} = this.state.email && this.state.password
     const isEnabled = this.isFormValid();
     
      return (
@@ -147,9 +163,24 @@ render () {
 
                 </Toast>
              </ToastContainer> 
+             
+            
          </div>
+         {this.state.showModal && (
+            <div className='modal'>
+                <div className='modal-content'>
+                <p>Please verify fields before processing</p>
+                    <button onClick={this.handleCancel}>Cancle</button>
+                    
+                    <button onClick={this.handleOk}>Ok</button>
+
+                </div>
+
+            </div>
+         )}
     </div>
 )}
+ 
 
    
 }
