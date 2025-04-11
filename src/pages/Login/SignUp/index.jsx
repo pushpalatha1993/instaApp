@@ -1,11 +1,12 @@
 import React, {Component} from "react";
 import "./style.css"
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Button, Toast,ToastContainer} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from "react-toastify";
 import {withRouter} from "../withRouter"
 import { Modal,button } from "react-bootstrap";
+// import { Navigate } from "react-router-dom";
  class  SignUp extends Component {
     
    constructor(props){
@@ -23,8 +24,17 @@ import { Modal,button } from "react-bootstrap";
             disabledSignupBtn:false,
             showModal:false,
             loading:false,
-            error:''
+            error:'',
+            token:null,
+            redirectToHome: false,
              }
+    }
+    componentDidMount() {
+        const token = localStorage.getItem('token')
+        if (token) {
+            this.setState({redirectToHome:true})
+            this.props.navigate('/home')
+         }
     }
     txtChange(e) {
         this.setState({input: e.target.value});
@@ -55,7 +65,6 @@ import { Modal,button } from "react-bootstrap";
     handleSubmit = (event) => {
         // console.dir(this.state)
         event.preventDefault()
-        // this.props.navigate('/Home')
         this.setState({ showModal:true});
        
        
@@ -84,12 +93,17 @@ import { Modal,button } from "react-bootstrap";
         console.dir(data)
         if(data){
             console.log(data.message)
+            if(data.token){
+                localStorage.setItem("token",data.token)
+                setTimeout(()=>{
+                    this.props.navigate('/Login')
+    
+                },
+                5000)
+            }
             this.setState({successMessage: "signup successful",showToast:"true",toastMessage:data.message,toastType:"successful"})
             // console.log(this.props)
-            setTimeout(()=>{
-                this.props.routers.navigate('/Login')
-
-            },5000)
+           
               }
              })
         .catch((error) => {
@@ -109,7 +123,10 @@ import { Modal,button } from "react-bootstrap";
  render () {
     console.log(this.props)
     // console.log(this.state)
-    const {showToast, toastMessage, toastType,toggleShow,isFormValid,showModal} = this.state.name && this.state.email && this.state.password;
+    if(this.state.redirectToHome){
+        return<Navigate to ="/Home"/>
+    }
+    const {showToast, token,toastMessage, toastType,toggleShow,isFormValid,showModal} = this.state.name && this.state.email && this.state.password;
     const isEnabled = this.isFormValid();
     console.log(this.state.toastMessage)
 

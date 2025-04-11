@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from 'react-toastify';
 import {withRouter} from './withRouter';
 import {Modal,button} from 'react-bootstrap';
+import { Navigate } from 'react-router-dom';
 
  class Login extends Component {
 
@@ -24,9 +25,20 @@ import {Modal,button} from 'react-bootstrap';
             disableLoginBtn:false,
             showModal:false,
             loading:false,
-            error:''
+            error:'',
+            token:null,
+            redirectToHome: false,
 
         }
+    }
+    componentDidMount(){
+        const token = localStorage.getItem('token')
+        console.log('Token from localStorage:',token)
+        if(token) {
+            this.setState({redirectToHome:true})
+             this.props.navigate('/home')
+         }
+       
     }
 
     showToast = ()=> {
@@ -54,18 +66,9 @@ import {Modal,button} from 'react-bootstrap';
     event.preventDefault()
     console.dir(this.props)
 this.setState({showModal: true})
+ }
 
-    
-    
-   
-    }
-
-          handleLogin = () => {
-        alert("Login successful")
-        
-    }
-    
-    handleToastClose = () => {
+handleToastClose = () => {
         // console.log("handle")
         this.setState({showToast: false})
      }
@@ -86,8 +89,15 @@ this.setState({showModal: true})
             // console.log("responsedata")
             // console.dir(data)
             if(data){
+                if(data){
+                    
+                    localStorage.setItem("token",data.token)
+                }
                 this.setState({successMessage:"Login successful",showToast:"true",toastMessage:data.message,toastType:"succesful"})
-                // this.props.routers.navigate('/Home')
+                setTimeout(()=>{
+                    this.props.navigate('/home')
+    
+                },5000)
             }
         })
         .catch((error) => {
@@ -110,12 +120,16 @@ render () {
     console.log(this.props)
     
     
-
-    const {showToast, toastMessage,toastType,toggleShow,withRouter,isFormValid,showModal} = this.state.email && this.state.password
+    if (this.state.redirectToHome) {
+        return <Navigate to="/Home" />
+      }
+    const {showToast, toastMessage,toastType,toggleShow,withRouter,isFormValid,showModal,token} = this.state.email && this.state.password
     const isEnabled = this.isFormValid();
     
      return (
+       
     <div className="row g-0 vh-100 justify-content-center align-items-center login-container">
+        
 
         <div className="col-10 row g-0 align-items-center border rounded-2 bg-white">
             <div className="d-none d-md-block col-6">
@@ -178,7 +192,7 @@ render () {
 
             </div>
          )}
-    </div>
+    </div> 
 )}
  
 
