@@ -28,6 +28,7 @@ import { Navigate } from 'react-router-dom';
             error:'',
             token:null,
             redirectToHome: false,
+            
 
         }
     }
@@ -36,8 +37,8 @@ import { Navigate } from 'react-router-dom';
         console.log('Token from localStorage:',token)
         if(token) {
             this.setState({redirectToHome:true})
-             this.props.navigate('/home')
-         }
+            
+            }
        
     }
 
@@ -89,15 +90,16 @@ handleToastClose = () => {
             // console.log("responsedata")
             // console.dir(data)
             if(data){
-                if(data){
+                if(data.token){
+                    this.setState({successMessage:"Login successful",showToast:"true",toastMessage:data.message,toastType:"succesful"})
+                setTimeout(()=>{
+                    this.setState({redirectToHome:true})
+    
+                },5000)
                     
                     localStorage.setItem("token",data.token)
                 }
-                this.setState({successMessage:"Login successful",showToast:"true",toastMessage:data.message,toastType:"succesful"})
-                setTimeout(()=>{
-                    this.props.navigate('/home')
-    
-                },5000)
+                
             }
         })
         .catch((error) => {
@@ -119,10 +121,9 @@ render () {
     console.log(this.state)
     console.log(this.props)
     
-    
-    if (this.state.redirectToHome) {
-        return <Navigate to="/Home" />
-      }
+    if(this.state.redirectToHome) {
+        return <Navigate to ="/Home"/>    }
+   
     const {showToast, toastMessage,toastType,toggleShow,withRouter,isFormValid,showModal,token} = this.state.email && this.state.password
     const isEnabled = this.isFormValid();
     
@@ -198,4 +199,4 @@ render () {
 
    
 }
-export default withRouter(Login);
+export default Login;
