@@ -28,12 +28,13 @@ import { Navigate } from 'react-router-dom';
             error:'',
             token:null,
             redirectToHome: false,
+            name:''
             
-
-        }
+             }
     }
     componentDidMount(){
         const token = localStorage.getItem('token')
+        const name = localStorage.getItem("name")
         console.log('Token from localStorage:',token)
         if(token) {
             this.setState({redirectToHome:true})
@@ -83,24 +84,23 @@ handleToastClose = () => {
             headers: {
                 'content-type' : 'application/json',
             },
-            body: JSON.stringify({email:this.state.email,password:this.state.password}),
+            body: JSON.stringify({email:this.state.email,password:this.state.password,username:this.state.name}),
         })
         .then((response) => response.json())
         .then((data)=>{
-            // console.log("responsedata")
-            // console.dir(data)
-            if(data){
-                if(data.token){
-                    this.setState({successMessage:"Login successful",showToast:"true",toastMessage:data.message,toastType:"succesful"})
+            console.log("Login responsedata:",data)
+            console.dir(data)
+            console.log("User data:",data.user)
+            
+                if(data && data.token){
+                    localStorage.setItem("token",data.token)
+                    localStorage.setItem('name',data.user?.name|| '')
+                    this.setState({successMessage:"Login successful",showToast:true,toastMessage:data.message,toastType:"succesful"})
                 setTimeout(()=>{
                     this.setState({redirectToHome:true})
     
-                },5000)
-                    
-                    localStorage.setItem("token",data.token)
-                }
-                
-            }
+                  },5000)
+                 }
         })
         .catch((error) => {
             this.setState({ 

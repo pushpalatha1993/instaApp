@@ -63,3 +63,16 @@
     margin: 10px;
     padding: 8px 16px;
 }
+.navbar-custom{
+    background-color: #333;
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.navbar-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
