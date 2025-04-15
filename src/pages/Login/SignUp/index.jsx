@@ -5,8 +5,9 @@ import { Button, Toast,ToastContainer} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from "react-toastify";
 import {withRouter} from "../withRouter"
-import { Modal,button } from "react-bootstrap";
+// import { Modal,button } from "react-bootstrap";
 // import { Navigate } from "react-router-dom";
+import Modal from "../Modal";
  class  SignUp extends Component {
     
    constructor(props){
@@ -27,6 +28,7 @@ import { Modal,button } from "react-bootstrap";
             error:'',
             token:null,
             redirectToHome: false,
+            isModalOpen: false
              }
     }
     componentDidMount() {
@@ -65,12 +67,8 @@ import { Modal,button } from "react-bootstrap";
     handleSubmit = (event) => {
         // console.dir(this.state)
         event.preventDefault()
-        this.setState({ showModal:true});
-       
-       
-       
-       
-    }
+        this.setState({ isModalOpen:true});
+       }
 
     handleToastClose = () => {
         console.log("handle")
@@ -78,7 +76,7 @@ import { Modal,button } from "react-bootstrap";
     }
     handleOk =()=>{
         const {name,email,password} = this.state
-        this.setState({showModal:false,loading:true,error:''})
+        this.setState({isModalOpen:false,loading:true,error:''})
 
          fetch(" https://instaapp-np7g.onrender.com/api/auth/register/email ",{           
             method: "POST",
@@ -118,6 +116,12 @@ import { Modal,button } from "react-bootstrap";
     }
     handleCancel = ()=>{
         this.setState({showModal:false})
+    }
+    openModal =() =>{
+        this.setState({isModalOpen:true})
+    }
+    closeModal = ()=> {
+        this.setState({isModalOpen:false})
     }
 
  render () {
@@ -187,7 +191,7 @@ import { Modal,button } from "react-bootstrap";
            </ToastContainer> 
 
         </div>
-        {this.state.showModal && (
+        {/* {this.state.showModal && (
             <div className='modal'>
                 <div className='model-content'>
                     <p>Please verify fields before processing</p>
@@ -195,7 +199,21 @@ import { Modal,button } from "react-bootstrap";
                     <button onClick={this.handleOk}>Ok</button>
                 </div>
             </div>
-        )}
+        )} */}
+        <div>
+            <Modal
+            isOpen={this.state.isModalOpen}
+            title="confirm Action"
+            body={<p>Are you sure you want to proceed?</p>}
+            onClose={this.closeModal}
+            buttons={
+                <>
+                <button onClick={this.closeModal} className="btn btn-second">Cancel</button>
+                <button onClick={this.handleOk} className="btn btn-primary">confirml</button>
+                </>
+            }
+            />
+        </div>
     </div>
 )}
    

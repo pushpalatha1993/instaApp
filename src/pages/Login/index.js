@@ -5,8 +5,9 @@ import { Toast, ToastContainer } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from 'react-toastify';
 import {withRouter} from './withRouter';
-import {Modal,button} from 'react-bootstrap';
+// import {Modal,button} from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
+import Modal from './Modal';
 
  class Login extends Component {
 
@@ -28,7 +29,8 @@ import { Navigate } from 'react-router-dom';
             error:'',
             token:null,
             redirectToHome: false,
-            name:''
+            name:'',
+            isModalOpen: false
             
              }
     }
@@ -67,7 +69,7 @@ import { Navigate } from 'react-router-dom';
     console.dir(this.state)
     event.preventDefault()
     console.dir(this.props)
-this.setState({showModal: true})
+this.setState({isModalOpen: true})
  }
 
 handleToastClose = () => {
@@ -77,7 +79,7 @@ handleToastClose = () => {
      
      handleOk = () => {
         const {email,password} = this.state;
-        this.setState({showModal: false,loading:true,error:''})
+        this.setState({isModalOpen: false,loading: true, error:''})
 
         fetch("https://instaapp-np7g.onrender.com/api/auth/login",{
             method: "POST",
@@ -113,12 +115,19 @@ handleToastClose = () => {
      handleCancel  = () => {
         this.setState({showModal:false})
      }
+     openModal = () => {
+        this.setState({isModalOpen:true})
+     }
+
+     closeModal = () => {
+        this.setState({isModalopen: false})
+     }
     
         
 
 render () {
 
-    console.log(this.state)
+    console.log(this.state.isModalOpen)
     console.log(this.props)
     
     if(this.state.redirectToHome) {
@@ -126,6 +135,7 @@ render () {
    
     const {showToast, toastMessage,toastType,toggleShow,withRouter,isFormValid,showModal,token} = this.state.email && this.state.password
     const isEnabled = this.isFormValid();
+    
     
      return (
        
@@ -136,6 +146,7 @@ render () {
             <div className="d-none d-md-block col-6">
                 <img src="https://img.freepik.com/premium-vector/small-island_645480-1472.jpg?w=826" alt="" className='img-fluid' />
             </div>
+           <div>
             <form className="col-12 col-md-6 py-4 px-3">
                 <h4 className="login-title text-center py-2 mb-4">Login</h4>
                 <div className="form-floating mb-3">
@@ -161,6 +172,7 @@ render () {
 
                 </div>
              </form>
+             </div>
              {this.state.errorMessage && <p style={{color:'red'}}>{this.state.errorMessage}</p>}
              {this.state.successMessage && <p style={{color:'green'}}>{this.state.successMessage}</p>}
 
@@ -181,7 +193,7 @@ render () {
              
             
          </div>
-         {this.state.showModal && (
+         {/* {this.state.showModal && (
             <div className='modal'>
                 <div className='modal-content'>
                 <p>Please verify fields before processing</p>
@@ -192,7 +204,25 @@ render () {
                 </div>
 
             </div>
-         )}
+         )} */}
+         
+         {/* <div className={this.state.isModalOpen ? 'blur-background': ''} > */}
+            <div>
+            {/* <button onClick={this.openModal}> Show Modal</button> */}
+            <Modal
+            isOpen={this.state.isModalOpen}
+            title="Confirm Action"
+            body={<p>Are you sure you want to proceed?</p>}
+            onClose={this.closeModal}
+            buttons={
+                <>
+                  <button onClick={this.closeModal} className='btn btn-secondary'>Cancel</button>
+                  <button onClick={this.handleOk} className='btn btn-primary'>confirm</button>
+                </>
+            }
+            />
+         </div>
+         
     </div> 
 )}
  
