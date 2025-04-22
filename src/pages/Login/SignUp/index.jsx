@@ -7,7 +7,9 @@ import { toast } from "react-toastify";
 import {withRouter} from "../withRouter"
 // import { Modal,button } from "react-bootstrap";
 // import { Navigate } from "react-router-dom";
+import { BsCheckCircle,BsXCircle } from "react-icons/bs";
 import Modal from "../Modal";
+import'react-toastify/dist/ReactToastify.css';
  class  SignUp extends Component {
     
    constructor(props){
@@ -28,11 +30,14 @@ import Modal from "../Modal";
             error:'',
             token:null,
             redirectToHome: false,
-            isModalOpen: false
+            isModalOpen: false,
+            name:''
              }
     }
     componentDidMount() {
         const token = localStorage.getItem('token')
+        const name = localStorage.getItem("name")
+        console.log('Token from localStorage:',token)
         if (token) {
             this.setState({redirectToHome:true})
             this.props.navigate('/home')
@@ -77,6 +82,7 @@ import Modal from "../Modal";
     handleOk =()=>{
         const {name,email,password} = this.state
         this.setState({isModalOpen:false,loading:true,error:''})
+        this.setState({successMessage:"Login success",showToast:true,error:''})
 
          fetch(" https://instaapp-np7g.onrender.com/api/auth/register/email ",{           
             method: "POST",
@@ -89,21 +95,23 @@ import Modal from "../Modal";
        .then((data)=>{
         console.log("responsedata")
         console.dir(data)
-        if(data){
-            console.log(data.message)
-            if(data.token){
+        
+            
+            if(data && data.token){
                 localStorage.setItem("token",data.token)
+                localStorage.setItem("name",data.user?.name|| '')
+                this.setState({successMessage:"signup success",showToast:"true",toastMessage:data.message,toastType:"success"})
                 setTimeout(()=>{
-                    this.props.navigate('/Login')
+                    this.setState({redirectToHome:true})
     
                 },
                 5000)
             }
-            this.setState({successMessage: "signup successful",showToast:"true",toastMessage:data.message,toastType:"successful"})
+            // this.setState({successMessage: "signup successful",showToast:"true",toastMessage:data.message,toastType:"successful"})
             // console.log(this.props)
            
-              }
-             })
+              })
+             
         .catch((error) => {
         console.dir(error)
         this.setState({
@@ -172,7 +180,7 @@ import Modal from "../Modal";
         
             {this.state.successMessage && <p style = {{color:'green'}}>{this.state.successMessage}</p>}
 
-            <ToastContainer position ="top-end" className="custom-toast" >
+            {/* <ToastContainer position ="top-end" className="custom-toast" >
             <Toast
             show={this.state.showToast}
             onClose={this.handleToastClose}
@@ -188,7 +196,32 @@ import Modal from "../Modal";
 
             </Toast>
             
-           </ToastContainer> 
+           </ToastContainer>  */}
+           <ToastContainer>
+                        <Toast show={this.state.showToast}onClose={this.handleToastClose}bg={this.state.toastType}delay={3000}>
+                        <button onClick={this.handleToastClose} className="btn">
+                                X
+                               </button>
+                           <Toast.Body>
+                               {this.state.toastType === "success"? (
+                                   <div className='d-flex align-items-center'> 
+                                   <BsCheckCircle color="green" className="me-2" size={20}/>
+                                   <span>{this.state.toastMessage}</span>
+                                   </div>
+                               ) : (
+                                   <div className="d-flex align-items-center"> 
+                                   <BsXCircle color='red' className='me-2' size={20}/>
+                                   <span>{this.state.toastMessage}</span>
+           
+                                   </div>
+           
+                               )
+                               }
+                           
+                           </Toast.Body>
+                            </Toast>
+                        
+                        </ToastContainer>
 
         </div>
         {/* {this.state.showModal && (

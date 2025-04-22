@@ -8,6 +8,9 @@ import {withRouter} from './withRouter';
 // import {Modal,button} from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import Modal from './Modal';
+import { BsCheckCircle, BsXCircle} from 'react-icons/bs';
+// import { ToastContainer,toast} from 'react-toastify';
+import'react-toastify/dist/ReactToastify.css';
 
  class Login extends Component {
 
@@ -30,7 +33,8 @@ import Modal from './Modal';
             token:null,
             redirectToHome: false,
             name:'',
-            isModalOpen: false
+            isModalOpen: false,
+            
             
              }
     }
@@ -80,7 +84,13 @@ handleToastClose = () => {
      handleOk = () => {
         const {email,password} = this.state;
         this.setState({isModalOpen: false,loading: true, error:''})
-
+        this.setState({successMessage:"Login success",showToast:true,toastType:"success"})
+        //  if(data && data.token){
+            // this.showSuccessToast("Login successful")
+            // this.setState({redirectToHome:true})
+        //  }else {
+            // this.showErrorToast("Login failed! please try again")
+        //  }
         fetch("https://instaapp-np7g.onrender.com/api/auth/login",{
             method: "POST",
             headers: {
@@ -97,7 +107,7 @@ handleToastClose = () => {
                 if(data && data.token){
                     localStorage.setItem("token",data.token)
                     localStorage.setItem('name',data.user?.name|| '')
-                    this.setState({successMessage:"Login successful",showToast:true,toastMessage:data.message,toastType:"succesful"})
+                    this.setState({successMessage:"Login success",showToast:true,toastMessage:data.message,toastType:"success"})
                 setTimeout(()=>{
                     this.setState({redirectToHome:true})
     
@@ -109,6 +119,7 @@ handleToastClose = () => {
                 showToast: true,
                 toastMessage: 'Login Failed! please try again ',
                 toastType:'danger',
+                
             })
           })
      }
@@ -133,7 +144,7 @@ render () {
     if(this.state.redirectToHome) {
         return <Navigate to ="/Home"/>    }
    
-    const {showToast, toastMessage,toastType,toggleShow,withRouter,isFormValid,showModal,token} = this.state.email && this.state.password
+    const {showToast, toastMessage,toastType,toggleShow,withRouter,isFormValid,showModal,token,onclose} = this.state.email && this.state.password
     const isEnabled = this.isFormValid();
     
     
@@ -176,7 +187,7 @@ render () {
              {this.state.errorMessage && <p style={{color:'red'}}>{this.state.errorMessage}</p>}
              {this.state.successMessage && <p style={{color:'green'}}>{this.state.successMessage}</p>}
 
-              <ToastContainer position="top-end" className="custom-toast" >
+              {/* <ToastContainer position="top-end" className="custom-toast" >
                 <Toast
                 show={this.state.showToast}
                 onClose={this.handleToastClose}
@@ -189,23 +200,35 @@ render () {
                     <Toast.Body>{this.state.toastMessage}</Toast.Body>
 
                 </Toast>
-             </ToastContainer> 
+             </ToastContainer>  */}
+             <ToastContainer>
+             <Toast show={this.state.showToast}onClose={this.handleToastClose}bg={this.state.toastType}delay={3000}>
+             <button onClick={this.handleToastClose} className="btn">
+                     X
+                    </button>
+                <Toast.Body>
+                    {this.state.toastType === "success"? (
+                        <div className='d-flex align-items-center'> 
+                        <BsCheckCircle color="green" className="me-2" size={20}/>
+                        <span>{this.state.toastMessage}</span>
+                        </div>
+                    ) : (
+                        <div className="d-flex align-items-center"> 
+                        <BsXCircle color='red' className='me-2' size={20}/>
+                        <span>{this.state.toastMessage}</span>
+
+                        </div>
+
+                    )
+                    }
+                
+                </Toast.Body>
+                 </Toast>
              
-            
-         </div>
-         {/* {this.state.showModal && (
-            <div className='modal'>
-                <div className='modal-content'>
-                <p>Please verify fields before processing</p>
-                    <button onClick={this.handleCancel}>Cancle</button>
-                    
-                    <button onClick={this.handleOk}>Ok</button>
-
-                </div>
-
-            </div>
-         )} */}
-         
+             </ToastContainer>
+              </div>
+              
+          
          {/* <div className={this.state.isModalOpen ? 'blur-background': ''} > */}
             <div>
             {/* <button onClick={this.openModal}> Show Modal</button> */}
