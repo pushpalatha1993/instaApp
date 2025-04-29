@@ -9,6 +9,9 @@ export default class Navbar extends Component {
            <span className="navbar-title">Welcome {this.props.username}
 
            </span>
+           <button onClick={this.handleLoggedout} className="btn btn-danger ">
+                    Logout
+                    </button>
            </div>
         )
     }

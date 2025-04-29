@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import { Toast, ToastContainer } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from 'react-toastify';
-import {withRouter} from './withRouter';
+import {withRouter} from '../withRouter';
 // import {Modal,button} from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
-import Modal from './Modal';
+import Modal from '../Modal';
 import { BsCheckCircle, BsXCircle} from 'react-icons/bs';
 // import { ToastContainer,toast} from 'react-toastify';
 import'react-toastify/dist/ReactToastify.css';
@@ -34,20 +34,18 @@ import'react-toastify/dist/ReactToastify.css';
             redirectToHome: false,
             name:'',
             isModalOpen: false,
-            
-            
-             }
+            userId:'',
+         }
     }
     componentDidMount(){
         const token = localStorage.getItem('token')
         const name = localStorage.getItem("name")
+        const userId =localStorage.getItem('userId')
         console.log('Token from localStorage:',token)
         if(token) {
             this.setState({redirectToHome:true})
-            
-            }
-       
-    }
+             }
+        }
 
     showToast = ()=> {
         toast("this is a custom-styled toast!",{
@@ -107,12 +105,18 @@ handleToastClose = () => {
                 if(data && data.token){
                     localStorage.setItem("token",data.token)
                     localStorage.setItem('name',data.user?.name|| '')
-                    this.setState({successMessage:"Login success",showToast:true,toastMessage:data.message,toastType:"success"})
-                setTimeout(()=>{
+                    localStorage.setItem("userId",data.user._id )
+                    if(this.props.onLoginSuccess) {
+                        this.props.onLoginSuccess(data.user._id)
+                    }
+                    this.setState({successMessage:"Login success",showToast:true,toastMessage:data.message,toastType:"success",usesrId:data})
+
+            setTimeout(()=>{
                     this.setState({redirectToHome:true})
     
                   },5000)
                  }
+                 
         })
         .catch((error) => {
             this.setState({ 
@@ -122,6 +126,7 @@ handleToastClose = () => {
                 
             })
           })
+
      }
      handleCancel  = () => {
         this.setState({showModal:false})
@@ -151,7 +156,6 @@ render () {
      return (
        
     <div className="row g-0 vh-100 justify-content-center align-items-center login-container">
-        
 
         <div className="col-10 row g-0 align-items-center border rounded-2 bg-white">
             <div className="d-none d-md-block col-6">

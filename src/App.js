@@ -1,31 +1,46 @@
 import logo from './logo.svg';
-import React from 'react';
+import React ,{Component} from 'react';
 import './App.css';
 import Context from './Context';
-import Home from './pages/Login/Home';
-import Login from './pages/Login';
-import SignUp from './pages/Login/SignUp';
+import Home from './pages/Home';
+import Login from './pages/auth/login';
+import SignUp from './pages/auth/SignUp';
 import { BrowserRouter, Route, Router, Routes } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-function App(props) {
-  console.log(props)
-  return (
-    <BrowserRouter>
-     <Routes>
-       <Route path='/login' element={<Login name="from App" />}/>
-      <Route path='/signup' element={<SignUp name="from App"/>}/>
-     <Route path='/' element={<h1>No page found</h1>}/>
-     <Route path='/home' element={<Home name="from App"/>}/>
-     </Routes>
-    </BrowserRouter>
-    // <div className="App">
-      
-      // {/* <Home name="latha"/> */}
-      
-    // </div>
-     )
+class App extends Component {
+  // console.log(props)
+  constructor(props) {
+    super(props);
+    this.state = {
+      userId: localStorage.getItem("userId") || null,
+    }
+  }
+  handleLoginSuccess = (userId) => {
+    console.log(userId)
+   this.setState({userId});
+   
+  }
+  render() {
+    return (
+      <BrowserRouter>
+       <Routes>
+         <Route path='/login' element={<Login  onLoginSuccess={this.handleLoginSuccess}/>}/>
+        <Route path='/signup' element={<SignUp name="from App"/>}/>
+       <Route path='/' element={<h1>No page found</h1>}/>
+       <Route path='/home' element={<Home userId={this.state.userId}/>}/>
+       </Routes>
+      </BrowserRouter>
+      // <div className="App">
+        
+        // {/* <Home name="latha"/> */}
+        
+      // </div>
+       )
+  }
+  
+ 
 }
 
 export default App;

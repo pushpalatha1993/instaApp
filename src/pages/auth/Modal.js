@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./style.css"
+import "./login/style.css"
 class Modal extends Component {
     render () { 
         const {isOpen, title, body, buttons, onclose} = this.props
