@@ -3,8 +3,9 @@ import React, { Component } from "react";
 import { Navigate } from "react-router-dom";
 import Navbar from "./auth/Navbar";
 import { FiPlus } from "react-icons/fi";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, ToastContainer } from "react-bootstrap";
 import "./auth/login/style.css";
+import {toast} from 'react-toastify';
 
 export default class Home extends Component {
   constructor(props) {
@@ -97,6 +98,7 @@ export default class Home extends Component {
   handleshare = () => {
     const userId = this.state.userId;
     if(!this.props.userId) {
+      toast.error("User ID not found.Cannot ctreate post.");
       console.error("user Id not found.Cannot create post.")
       return;
     }
@@ -124,9 +126,11 @@ export default class Home extends Component {
       })
       .then((data) => {
         console.log("post created successfully:", data);
+        toast.success("Post create successfully!");
       })
       .catch((error) => {
         console.error("Error creating post:", error);
+        toast.error("Failed to create post.Please try again.")
       });
     this.setState({
       showCaptionModal: false,
@@ -315,6 +319,7 @@ export default class Home extends Component {
             </div>
           </Modal.Body>
         </Modal>
+        <ToastContainer/>
       </div>
     );
   }

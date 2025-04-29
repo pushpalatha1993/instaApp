@@ -6,8 +6,8 @@ import Home from './pages/Home';
 import Login from './pages/auth/login';
 import SignUp from './pages/auth/SignUp';
 import { BrowserRouter, Route, Router, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
-import 'bootstrap/dist/css/bootstrap.min.css'
 
 class App extends Component {
   // console.log(props)
@@ -31,7 +31,9 @@ class App extends Component {
        <Route path='/' element={<h1>No page found</h1>}/>
        <Route path='/home' element={<Home userId={this.state.userId}/>}/>
        </Routes>
+       <ToastContainer autoClose={3000}/>
       </BrowserRouter>
+
       // <div className="App">
         
         // {/* <Home name="latha"/> */}
