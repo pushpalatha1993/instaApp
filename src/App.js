@@ -14,7 +14,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: localStorage.getItem("userId") || null,
+      userId:  "",
     }
   }
   handleLoginSuccess = (userId) => {
