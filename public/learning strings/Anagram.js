@@ -1,37 +1,34 @@
-import React, {useEffect} from 'react'
+// 
 
-function ValidanagramExample() {
-    useEffect(() => {
-        const s = "listen";
-        const t = "silent";
-        const result = isAnagram(s,t);
-        console.log(`is "${s}" an anagram of "${t}"?`,result);
-    } ,[] );
+// 
+function isAnagram(str1,str2) {
 
-    function isAnagram(s,t) {
-        if(s.length !== t.length) {
-            console.log("lenght are different, not anagram");
-            return  false;
-        }
+    const cleanStr1 = str1.replace(/\s+/g, '').toLowerCase();
+  const cleanStr2 = str2.replace(/\s+/g, '').toLowerCase();
 
-       const count = {};
+    if(cleanStr1.length !== cleanStr2.length) return false;
 
-       for(let char of s){
-        count[char] = (count[char] ||0) +1;
+    const count1 = {};
+    const count2 = {};
 
-       }
-       console.log("charctor count after proccessing s:",count);
-
-       for(let char of t){
-        if(!count[char]) {
-            console.log(`charactor '${char}' is not matched or used too many times.`);
-            return false;
-        }
-        count[char]--;
-       }
-       console.log("charactor count after proccessing t:",count);
-       return true;
+    for(let char of cleanStr1) {
+        count1[char] = (count1[char] || 0) + 1; 
     }
-//  return<div> check the console to see if the string are anagrams.</div>
-} 
-export default ValidanagramExample;
+
+    for(let char of cleanStr2){
+        count2[char] = (count2[char] || 0) + 1;
+    }
+    console.log("Count 1:",count1)
+    console.log("Count 2:",count2)
+
+    for(let key in count1){
+        if(count1[key] !== count2[key])
+            return false;
+        
+    }
+    return true;
+
+}
+console.log(isAnagram("listen", "silent"));
+console.log(isAnagram("triangle", "integral"));
+console.log(isAnagram("hello", "world"));
