@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import React, { Component } from "react";
 import { Navigate } from "react-router-dom";
 import Navbar from "./auth/Navbar";
-import CreatePost from './Post/Createpost'; 
+import CreatePost from "./Post/Createpost"; 
 import "./auth/login/style.css";
 import Getpost from "./Post/Getpost";
 
@@ -14,6 +14,7 @@ export default class Home extends Component {
     this.state = {
       username:"",
       newPostAdded: false,
+      showCreateModal:false,
     }
   }
   componentDidMount(prevprops) {
@@ -30,17 +31,29 @@ export default class Home extends Component {
   resetPostAdded = () => {
     this.setState({newPostAdded: false})
   }
+  handleShowCreateModal = () => {
+    this.setState({showCreateModal:true});
+  }
+  handleCloseCreateModal = ()=> {
+    this.setState({showCreateModal:false})
+  }
+  
 
    render() {
+     
    return (
       <div>
-        <Navbar username={this.state.username} handleLoggedout={this.handleLoggedout} />
-        <div className="home-container">
+        <Navbar username={this.state.username} handleLoggedout={this.handleLoggedout} onPostCreate={this.handleNewPost} onCreateClick={this.handleShowCreateModal}/>
+        {/* <div className="home-container">
           <h1>Home Page</h1>
           <p>You are logged in</p>
-        </div>
-        <CreatePost onPostCreated={this.handleNewPost} />
+        </div> */}
+        <CreatePost onPostCreated={this.handleNewPost}  showModal={this.state.showCreateModal}
+        handleClose={this.handleCloseCreateModal} />
         <Getpost newPostAdded={this.state.newPostAdded}  resetPostAdded={this.resetPostAdded}/>
+        
+
+
       </div>
       
     );

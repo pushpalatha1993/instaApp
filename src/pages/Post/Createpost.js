@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.css";
 import React, { Component } from "react";
 import { Navigate } from "react-router-dom"
-import { FiPlus } from "react-icons/fi";
+
 import Navbar from "../auth/Navbar";
 import { Button, Modal, ToastContainer } from "react-bootstrap";
 import "../auth/login/style.css";
@@ -56,8 +56,12 @@ export default class Createpost extends Component {
     this.setState({ showModal: false, file: null });
   };
   handleFileChange = (e) => {
-    this.setState({ file: e.target.files[0] });
-  };
+    console.log("e.target",e.target)
+    console.log("e.target.files",e.target.files)
+    const file = e.target.files[0];
+    console.log("selected file:",file)
+    this.setState({file});
+     };
   handleUpload = () => {
     const {file} = this.state;
     if (file) {
@@ -77,10 +81,10 @@ export default class Createpost extends Component {
   handleImageSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
+      const imageUrl = URL.createObjectURL(file);
       this.setState({
-        selectedImage:
-          "https://www.pexels.com/photo/green-succulent-plants-on-pots-1470171/ ",
-        showConfirmationModal: true,
+        selectedImage: imageUrl,
+       showConfirmationModal: true,
       });
     }
   };
@@ -103,20 +107,28 @@ export default class Createpost extends Component {
     });
   };
   handleshare = () => {
-    const {image,caption} = this.state;
-    const userId = this.state.userId;
+     
+    const {userId,captionText,selectedImage,imageUrl} = this.state;
+
+    // if(!imageUrl || !captionText){
+    //   toast.error("pl;ease select an image and write a caption.")
+    //   return;
+    // }
     if(!userId) {
       toast.error("User ID not found.Cannot ctreate post.");
       console.error("user Id not found.Cannot create post.")
       return;
     }
     console.log("sharing", this.state.captionText);
+    if(!selectedImage) {
+      toast.error("No image selected.")
+      return;
+    }
 
     const postData = {
-      caption: this.state.captionText,
-      imageUrl:
-        "https://www.pexels.com/photo/green-succulent-plants-on-pots-1470171/",
-        userId:userId ,
+      caption: captionText,
+      imageUrl:selectedImage,
+      userId:userId ,
     };
     console.log("strating API call: creating post", postData);
     fetch("https://instaapp-np7g.onrender.com/api/post/create", {
@@ -135,6 +147,7 @@ export default class Createpost extends Component {
       .then((data) => {
         console.log("post created successfully:", data);
         toast.success("Post create successfully!");
+        this.setState({captionText: '',imageUrl: ''});
         // this.props.onPostCreated();
         // this.setState({newPostAdded:true})
         if (this.props.onPostCreated){
@@ -166,14 +179,14 @@ export default class Createpost extends Component {
       <div>
        
         <div className="text-center mt-4">
-          <img
+          {/* <img
             src="https://plus.unsplash.com/premium_photo-1681290358247-c160fc097bdb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGxhbnR8ZW58MHx8MHx8fDA%3D"
             alt="Selected"
             className="img-fluid rounded mx-auto d-block"
             style={{ maxHeight: "300px", maxWidth: "90%" }}
-          />
+          /> */}
         </div>
-        <div>
+        {/* <div>
           <button
             variant="primary"
             className="d-inline-flex align-items-center"
@@ -183,12 +196,12 @@ export default class Createpost extends Component {
             <FiPlus className="me-2" />
             Create
           </button>
-        </div>
+        </div> */}
 
         {/* Create Post Modal */}
         <Modal
-          show={this.state.showModal}
-          onHide={this.handleClose}
+          show={this.props.showModal}
+          onHide={this.props.handleClose}
           centered
           contentClassName="custom-modal"
         >

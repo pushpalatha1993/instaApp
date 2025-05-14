@@ -22,8 +22,14 @@ export default class Getpost extends Component {
         fetch(`https://instaapp-np7g.onrender.com/api/post/user/${userId}` )
          .then(response => response.json())
          .then(data =>{
-            console.log("fetched posts:",data)
-            this.setState({posts:data,loading:false});
+            console.log("API returned data:",data)
+            if(Array.isArray(data)) {
+                this.setState({posts:data,loading:false});
+            }else {
+                console.error("Expected an array but got:",typeof dada)
+                this.setState({error:"Invalid data format",loading:false})
+            }
+           
             
          })
           .catch(error => {
@@ -38,7 +44,7 @@ export default class Getpost extends Component {
                 console.log("detected new post added.Fecthing updated post....");
                  fetch(`https://instaapp-np7g.onrender.com/api/post/user/${currentUserId}`)
                 .then((response) => response.json())
-                console.log("Received response from API")
+                // console.log("Received response from API")
                 .then(data =>{
                    console.log("Updated fetched posts:",data)
                    this.setState({posts:data,loading:false});
@@ -56,25 +62,31 @@ export default class Getpost extends Component {
             const {posts,loading,error} = this.state;
             if(loading) return <p> Loading post</p>
             if(error) return <p>{error}</p>
+            console.log("post to render:",posts)
+            posts.forEach(post =>{
+                console.log("image src for post:",post)
+                // console.log("posted imageURL:",image)
+            })
+            
             return(
                 <div className="container mt-4">
-                    <h3
-                    className="mb-4">All post</h3>
-                    <div className="row row-cols-1 row-cols-md-3 g-4">
-                        {posts.map((post)=>(
-                            <div key={post._id} className="col">
-                            <div className="card h-100 shadow-sm">
+                    <h3 className="mb-4">All post</h3>
+                    <div>
+                        {posts.map(({_id,caption,imageUrl,user})=>(
+                            <div key={_id} className="card mb-4 shadow-sm">
+                            
                               <img 
-                              src={post.image || "https://via.placeholder.com"} 
+                              src={imageUrl}
+                            //   src="https://plus.unsplash.com/premium_photo-1681290358247-c160fc097bdb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGxhbnR8ZW58MHx8MHx8fDA%3D" 
                               className="card-img-top"
-                              alt="placeholder"
-                              style={{objectFit:"cover",height:"300px"}}
+                              alt="Post"
+                              style={{objectFit:"cover",height:"300px",width:"100%",objectFit: "cover", borderRadius:"8px" }}
                               /> 
                               <div className="card-body">
-                               <p className="card-text">{post.caption}</p>
+                               <p className="card-text">{caption}</p>
                               </div>
                             </div>
-                            </div>
+                            
                         ))}
                     </div>
                 </div>
