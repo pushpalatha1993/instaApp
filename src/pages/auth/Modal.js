@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import "./login/style.css"
-class Modal extends Component {
-    render () { 
-        const {isOpen, title, body, buttons, onclose} = this.props
-        console.dir(this.props)
+function Modal ({isOpen, title, body, buttons, onclose}) {
+    // render () { 
+        
+        // console.dir(this.props)
             if(!isOpen) return null;
         
             return(
@@ -27,5 +27,5 @@ class Modal extends Component {
         
     }
 
-}
+// }
 export default Modal;

@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.css";
 import React, { Component } from "react";
 import { Navigate } from "react-router-dom"
-
+import CaptionModal from "../../Component/Modals/CaptionModal";
 import Navbar from "../auth/Navbar";
 import { Button, Modal, ToastContainer } from "react-bootstrap";
 import "../auth/login/style.css";
@@ -20,6 +20,7 @@ export default class Createpost extends Component {
       showCaptionModal: false,
       captionText: "",
       userId: props.userId || localStorage.getItem('userId') ||null,
+      showPreviewModal: false,
       
     };
   }
@@ -46,9 +47,10 @@ export default class Createpost extends Component {
     // window.location.href = "/";
     console.log("LoggedOut,token removed.")
     this.setState({ isLoggedOut: true });
-    
-    
-  };
+    };
+    handlePreviewModal = () => {
+      this.setState({ showPreviewModal:true})
+    }
   handleShow = () => {
     this.setState({ showModal: true });
   };
@@ -89,7 +91,7 @@ export default class Createpost extends Component {
     }
   };
   handleBack = () => {
-    this.setState({ showConfirmationModal: false, showDiscardModal: true });
+    this.setState({ showConfirmationModal: true, showDiscardModal: false,showCaptionModal: false,showImageModal:true });
   };
   handleDiscard = () => {
     this.setState({
@@ -106,13 +108,13 @@ export default class Createpost extends Component {
       showCaptionModal: true,
     });
   };
-  handleshare = () => {
+  handleShare = () => {
      
     const {userId,captionText,selectedImage,imageUrl} = this.state;
 
     // if(!imageUrl || !captionText){
-    //   toast.error("pl;ease select an image and write a caption.")
-    //   return;
+      // toast.error("please select an image and write a caption.")
+      // return;
     // }
     if(!userId) {
       toast.error("User ID not found.Cannot ctreate post.");
@@ -121,7 +123,7 @@ export default class Createpost extends Component {
     }
     console.log("sharing", this.state.captionText);
     if(!selectedImage) {
-      toast.error("No image selected.")
+      toast.error("No image selected.");
       return;
     }
 
@@ -163,9 +165,12 @@ export default class Createpost extends Component {
       showCaptionModal: false,
       captionText: "",
       selectedImage: null,
+      showModal:false,
     });
   };
 
+  handleHide =() => this.setState({ showCaptionModal: false })
+  handlecaptionText = (e) => this.setState({captionText: e.target.value})
   render() {
     const { selectedImage, showConfirmationModal, showDiscardModal } =
       this.state;
@@ -173,11 +178,13 @@ export default class Createpost extends Component {
       return <Navigate to="/login" />;
       // <p> welcome {this.state.username||'user'}</p>
     }
+   
+    
 
     return (
         
       <div>
-       
+        
         <div className="text-center mt-4">
           {/* <img
             src="https://plus.unsplash.com/premium_photo-1681290358247-c160fc097bdb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGxhbnR8ZW58MHx8MHx8fDA%3D"
@@ -185,7 +192,8 @@ export default class Createpost extends Component {
             className="img-fluid rounded mx-auto d-block"
             style={{ maxHeight: "300px", maxWidth: "90%" }}
           /> */}
-        </div>
+        </div> 
+       
         {/* <div>
           <button
             variant="primary"
@@ -303,49 +311,37 @@ export default class Createpost extends Component {
 
         {/* Share Image */}
 
-        <Modal
-          show={this.state.showCaptionModal}
-          onHide={() => this.setState({ showCaptionModal: false })}
-          size="lg"
-          centered
-        >
+        <CaptionModal handleBack={this.handleBack } handleHide={this.handleHide } handlecaptionText={this.handlecaptionText} showCaptionModal={this.state.showCaptionModal} handleShare={this.handleShare} selectedImage={this.state.selectedImage} captionText={this.state.captionText}/>
+
+        {/* <Modal show ={show} onHide={onHide} size="lg" centered>
           <Modal.Body className="d-flex p-0">
+            
             <div className="w-50">
+              <img
+              src={image}
+              alt="Selected"
+              className="img-fluid h-100 w-100"
+              style={{ objectFit: 'cover'}}
+              />
+            </div>
+
+            
+            <div className="W-50 p-4 d-flex flex-column justify-content-between">
               <div>
-                <Button variant="secondary" onClick={this.handleBack}>
-                  Back
-                </Button>
-                <Button
-                  variant="primary"
-                  className="position-absolute top-0 end-0 m-2"
-                  onClick={this.handleshare}
-                  style={{zIndex:1}}s
-                >
-                  Share
+                <h5>Caption</h5>
+                <p>{caption}</p>
+              </div>
+              <div className="text-end">
+                <Button variant="secondary" onClick={onHide}>
+                  Close
                 </Button>
               </div>
-
-              <img
-                src={this.state.selectedImage}
-                alt="preview"
-                className="img-fluid h-100 w-100"
-                style={{ objectFit: "cover", borderRight: "1px solid #ddd" }}
-              />
-            </div>
-            <div className="w-50 p-3 position-relative d-flex flex-column">
-              <h5 className="mb-3">Add a caption</h5>
-              <textarea
-                className="from-control flex-grow-1"
-                placeholder="this is the image"
-                value={this.state.captionText}
-                onChange={(e) => this.setState({ captionText: e.target.value })}
-                style={{ resize: "none" }}
-              />
             </div>
           </Modal.Body>
-        </Modal>
+        </Modal> */}
         <ToastContainer/>
       </div>
     );
   }
-}
+  }
+// }
