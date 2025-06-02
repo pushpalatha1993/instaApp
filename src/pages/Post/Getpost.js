@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // import previewModal from "./previewModal";
 import { Modal, Button} from "react-bootstrap";
 import CaptionModal from "../../Component/Modals/CaptionModal";
+import { toast } from "react-toastify";
 
 
 export default class Getpost extends Component {
@@ -18,6 +19,11 @@ export default class Getpost extends Component {
             selectedImage: '',
             selectedCaption: '',
             isFromGetPost: false,
+            showEditModal: false,
+            editableCaption: '',
+            showEditCaptionModal: false,
+            selectedPost:null,
+            currentUserId:'',
         }
     }
     componentDidMount () {
@@ -64,7 +70,7 @@ export default class Getpost extends Component {
                 }  
             }
             handleImageSelect = (post) => {
-                this.setState({ showModal:true, selectedImage: post.imageUrl, selectedCaption: post.caption, isFromGetPost: true});
+                this.setState({ showModal:true, selectedPost: post,  selectedImage: post.imageUrl, selectedCaption: post.caption, isFromGetPost: true});
             };
 
             handleCloseModal = () => {
@@ -84,8 +90,70 @@ export default class Getpost extends Component {
             handleCaptionText = (e) => this.setState({captionText: e.target.value})
 
             handleShowModal = (post) => {
-                this.setState({showModal:true,selectedPost:post})
+                this.setState({showModal:true,
+                    selectedPost:post,
+                    selectedImage: post.imageUrl,
+                    selectedCaption: post.caption,
+                    isFromGetPost: true,
+                    editableCaption: post.caption,
+                })
             }
+            removePostById = (postId) => {
+                this.setState((prevState) => ({
+                    posts: prevState.posts.filter(post => post._id !==postId)
+                }))
+            }
+            handleEditClick = () =>{
+                this.setState({ 
+                    editableCaption:this.state.selectedPost.caption,
+                    showEditCaptionModal: true,
+                })
+            }
+            handleEditCaptionChange = (e) => {
+                this.setState({editableCaption: e.target.value})
+            }
+            handleEditModalClose = () => {
+                this.setState({ showEditModal: false})
+            } 
+            handleEditShare = async () => {
+                const { selectedPost, editableCaption,currentUserId, posts} = this.state;
+                
+                if(!selectedPost || !selectedPost._id) {
+                    console.error("No selected post selected for editing.");
+                    toast.error("No post selected.")
+                    return;
+                }
+
+                fetch(`https://instaapp-np7g.onrender.com/api/post/update/${selectedPost._id}`,{
+                    method: 'PUT',
+                    headers:{'Content-Type' : 'application/json'},
+                    body:JSON.stringify({
+                        caption:editableCaption,
+                        userId: currentUserId,
+                    })
+                })
+                .then((res) => {
+                    if(!res.ok)throw new Error('Update failed');
+                     return res.json();
+                })
+                .then((data) => {
+                    toast.success("Caption updated successfully!");
+                    this.setState((prevState) => ({
+                        posts: prevState.posts.map((post) =>
+                            post._id === selectedPost._id ? {...post, caption: editableCaption} : post
+                        ),
+                       showEditCaptionModal: false,
+                    }))
+                  
+                })
+                .catch((error) => {
+                    console.error("Update error:",error);
+                    toast.error("Failed to update caption. Please try again.")
+                    // alert("Failed to update")
+                })
+            }
+          
+            
 
             render() {
             const {posts,loading,error} = this.state;
@@ -110,12 +178,12 @@ export default class Getpost extends Component {
                               className="card-img-top"
                               alt="Post"
                               style={{objectFit:"cover",height:"300px",width:"100%",objectFit: "cover", borderRadius:"8px" }}
-                              onClick={() => this.handleImageSelect({imageUrl,caption})}
+                              onClick={() => this.handleImageSelect({_id, imageUrl,caption})}
                              /> 
                              <button
                                   className="btn btn-light position-absolute"
                                   style={{ top: "10px", right: "10px", zIndex: 10 }}
-                                //   onClick={() => alert("Ellipsis menu clicked")}
+                                
                                   >
     
                                 </button>
@@ -127,7 +195,24 @@ export default class Getpost extends Component {
                             
                         ))}
                     </div>
-                    <CaptionModal  postId={this.state.selectedPost?.id} selectedImage={this.state.selectedPost?.image} captionText={this.state.selectedPost?.caption} handleBack={this.handleBack } handleHide={this.handleClose } handleCaptionText={this.handleCaptionChange} showCaptionModal={this.state.showModal} handleShare={this.handleShare}   isFromGetPost={this.state.isFromGetPost} />
+                    <CaptionModal  postId={this.state.selectedPost?._id} selectedImage={this.state.selectedPost?.imageUrl} captionText={this.state.selectedCaption} handleBack={this.handleBack } handleHide={this.handleCloseModal } handleCaptionText={this.handleCaptionText} showCaptionModal={this.state.showModal} handleShare={this.handleShare}   isFromGetPost={this.state.isFromGetPost} onPostDeleted={this.removePostById} handleEdit={this.handleEditClick}/>
+                    {/* Editable second Caption Modal */}
+                    {this.state.showEditCaptionModal &&(
+                      <CaptionModal 
+                      postId={this.state.selectedPost?._id}
+                      selectedImage={this.state.selectedPost?.imageUrl}
+                      captionText={this.state.editableCaption}
+                      handleBack={this.handleEditModalClose}
+                      handleHide={() => this.setState({showEditCaptionModal:false})}
+                      handleCaptionText={this.handleEditCaptionChange}
+                      showCaptionModal={this.state.showEditCaptionModal}
+                      handleEditShare={this.handleEditShare}
+                      isFromGetPost={false}
+                      onPostDeleted={this.removePostById}
+                      readOnly={false}
+                       />
+                    )}
+                    
                 </div>
                  )
          }

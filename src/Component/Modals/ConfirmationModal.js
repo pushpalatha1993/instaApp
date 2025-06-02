@@ -7,10 +7,10 @@ const ConfirmationModal = ({show, onHide, onConfirm}) => {
             <Modal.Body className="text-centered">
               <p>Are you sure you want to delete this post?</p>
               <div className="d-flex justiofy-content-around mt-4">
-                <Button variant="danger" onclick={onConfirm}>
+                <Button variant="danger" onClick={onConfirm}>
                     Delete
                 </Button>
-                <Button variant="secondary" onclick={onHide}>
+                <Button variant="secondary" onClick={onHide}>
                    Cancel
                 </Button>
 

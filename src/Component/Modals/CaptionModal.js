@@ -8,12 +8,12 @@ const CaptionModal = (props) =>{
 
     const handleOptionsOpen = () => setShowOptions(true);
     const handleOptionsClose = () => setShowOptions(false);
-    console.log("captionModal Props:",props.showCaptionModal);
+     console.log("captionModal Props:",props.showCaptionModal);
     console.log("Trying to delete post with ID:",props.postId);
 
     const handleDeleteClick = async () => { 
         try {
-           const response = await fetch(`http://instaapp-np7g.onrender.com/api/post/${props.postId}`,{
+           const response = await fetch(`https://instaapp-np7g.onrender.com/api/post/${props.postId}`,{
             method:'DELETE',
             headers: {
                 'Content-Type' : 'application/json'
@@ -22,6 +22,7 @@ const CaptionModal = (props) =>{
            if(response.ok){
             setShowConfirmDelete(false);
             props.handleHide();
+            props.onPostDeleted(props.postId);
             alert("Post deleted successfully!");
          }else {
             alert("Failed to delete the post.")
@@ -39,8 +40,9 @@ const CaptionModal = (props) =>{
         setShowConfirmDelete(false);
         alert("Post deleted!");
         props.handleHide();
+        handleDeleteClick();
     }
-   
+  
 return (
     <div>
         <Modal
@@ -61,7 +63,7 @@ return (
                 <Button
                   variant="primary"
                   className="position-absolute top-0 end-0 m-2"
-                  onClick={props.handleShare}
+                  onClick={props.isFromGetPost ? props.handleShare: props.handleEditShare}
                   style={{zIndex:1}}
                 >
                   Share
@@ -90,7 +92,7 @@ return (
                 className="form-control flex-grow-1"
                 placeholder="this is the image"
                 value={props.captionText}
-                onChange={(e) => props.handlecaptionText(e)}
+                onChange={(e) => props.handleCaptionText(e)}
                 style={{ resize: "none" }}
               />
             </div>
@@ -100,12 +102,16 @@ return (
         <OptionsModal 
         show={showOptions}
         onHide={handleOptionsClose}
-        onDelete={
-            handleDeleteClick
+        onDelete={ () => {
+            handleOptionsClose();
+            setShowConfirmDelete(true);
+        }
+            
         }
         onEdit={() => {
             handleOptionsClose();
-            alert("Go to post clicked")
+            props.handleEdit();
+            alert("Edit clicked")
         }}
         onGoToPost={() => {
             handleOptionsClose();
